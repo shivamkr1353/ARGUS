@@ -188,12 +188,91 @@ Edit `config.py` to customize:
 
 ---
 
+## 🍓 Raspberry Pi Deployment (Headless Mode)
+
+ARGUS includes a lightweight, headless mode designed for Raspberry Pi 4 with an ESP32-CAM — no screen, no browser, no Streamlit.
+
+### Hardware Required
+
+| Component | Notes |
+|---|---|
+| Raspberry Pi 4 (4GB+) | 64-bit Raspberry Pi OS recommended |
+| ESP32-CAM | Runs CameraWebServer sketch, connects via WiFi |
+| USB Microphone | Plugged into Pi USB port |
+| Speaker | 3.5mm jack or USB/Bluetooth speaker |
+| Push button + 10kΩ resistor | Connected to GPIO 17 (BCM) and GND |
+
+### GPIO Wiring (Push Button)
+
+```
+GPIO 17 ──┬── Button ── GND
+           │
+          10kΩ
+           │
+          3.3V
+```
+
+### Step 1: Flash ESP32-CAM
+
+1. Open Arduino IDE → **File → Examples → ESP32 → Camera → CameraWebServer**
+2. Set your WiFi SSID and password in the sketch
+3. Select board: **AI Thinker ESP32-CAM**
+4. Upload and open Serial Monitor — note the IP address (e.g., `192.168.1.100`)
+
+### Step 2: Install on Pi
+
+```bash
+git clone https://github.com/shivamkr1353/ARGUS.git
+cd ARGUS
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements_pi.txt
+```
+
+> **System dependencies** (install once):
+> ```bash
+> sudo apt update && sudo apt install -y portaudio19-dev python3-pyaudio mpv ffmpeg alsa-utils
+> ```
+
+### Step 3: Configure
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+Set your API key and ESP32-CAM IP:
+```
+KIMI_API_KEY=your_nvidia_nim_api_key
+ESP32_CAM_URL=http://192.168.1.100
+```
+
+### Step 4: Run
+
+```bash
+# Test all modules first
+python main_headless.py --test
+
+# Run headless mode
+python main_headless.py
+```
+
+### Step 5: Auto-Start on Boot (Optional)
+
+```bash
+sudo cp argus.service /etc/systemd/system/
+sudo systemctl enable argus
+sudo systemctl start argus
+```
+
+---
+
 ## ⚠️ Important Notes
 
-- This is a **laptop demo prototype** — not the final Raspberry Pi wearable.
-- Laptop peripherals (webcam, mic, speakers) simulate the final hardware.
-- No GPIO, sensor, or hardware driver code is included.
-- Internet connection is required for all AI features.
+- **Laptop mode** (`streamlit run main.py`) uses your laptop webcam, mic, and speakers for demo/debugging.
+- **Pi headless mode** (`python main_headless.py`) uses ESP32-CAM over WiFi, USB mic, and a speaker — no screen needed.
+- Internet connection is required for all AI features (NVIDIA NIM API, Google STT, Edge TTS).
+- The ESP32-CAM and Raspberry Pi must be on the **same WiFi network**.
 
 ---
 
