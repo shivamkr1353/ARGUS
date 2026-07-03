@@ -19,6 +19,7 @@ import tempfile
 import subprocess
 import time
 import argparse
+import ctypes
 from datetime import datetime
 
 # Force UTF-8 output on Windows (prevents UnicodeEncodeError with emoji)
@@ -72,11 +73,16 @@ def play_audio(audio_bytes: bytes) -> None:
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             )
         elif sys.platform == "win32":
-            subprocess.run(
-                f'ffplay -nodisp -autoexit "{tmp_path}"',
-                shell=True,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            )
+            abs_path = os.path.abspath(tmp_path).replace("/", "\\")
+            try:
+                # Open audio device
+                ctypes.windll.winmm.mciSendStringW(f'open "{abs_path}" type mpegvideo alias my_audio', None, 0, 0)
+                # Play audio and wait until finished
+                ctypes.windll.winmm.mciSendStringW('play my_audio wait', None, 0, 0)
+                # Close audio device
+                ctypes.windll.winmm.mciSendStringW('close my_audio', None, 0, 0)
+            except Exception as e:
+                print(f"[Audio] Native Windows playback failed: {e}")
         elif sys.platform == "darwin":
             subprocess.run(["afplay", tmp_path])
     except Exception as e:
