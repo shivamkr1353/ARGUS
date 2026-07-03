@@ -12,6 +12,7 @@ Cross-platform: Windows (DirectShow), Linux/Pi (V4L2), macOS (AVFoundation).
 
 import io
 import sys
+import time
 import base64
 from PIL import Image
 from typing import Optional, Tuple
@@ -220,11 +221,19 @@ class VisionModule:
         Returns:
             Tuple of (description_text, pil_image).
         """
+        t0 = time.time()
         pil_image = self._capture_pil(frame)
+        t_capture = time.time() - t0
+        print(f"    [Vision] Image capture took {t_capture:.2f}s")
+
+        t0 = time.time()
         image_bytes = self.pil_to_bytes(pil_image)
         b64_image = base64.b64encode(image_bytes).decode("utf-8")
         prompt = custom_prompt or self.scene_prompt
+        t_encode = time.time() - t0
+        print(f"    [Vision] Encoding & scaling took {t_encode:.2f}s")
 
+        t0 = time.time()
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
@@ -245,6 +254,8 @@ class VisionModule:
                 max_tokens=512,
                 temperature=0.4,
             )
+            t_api = time.time() - t0
+            print(f"    [Vision] Llama API request took {t_api:.2f}s")
             description = response.choices[0].message.content.strip()
             if not description:
                 description = "I captured an image but could not generate a description. Please try again."
