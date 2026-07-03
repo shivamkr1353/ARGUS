@@ -93,7 +93,7 @@ class VisionModule:
         """
         capture_url = f"{self.esp32_url}/capture"
         try:
-            resp = _requests.get(capture_url, timeout=5)
+            resp = _requests.get(capture_url, timeout=1.5)
             resp.raise_for_status()
             return Image.open(io.BytesIO(resp.content)).convert("RGB")
         except _requests.ConnectionError:
@@ -115,7 +115,7 @@ class VisionModule:
         if not REQUESTS_AVAILABLE or not url:
             return False
         try:
-            resp = _requests.get(f"{url.rstrip('/')}/capture", timeout=3)
+            resp = _requests.get(f"{url.rstrip('/')}/capture", timeout=1.0)
             return resp.status_code == 200
         except Exception:
             return False

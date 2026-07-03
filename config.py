@@ -20,8 +20,8 @@ KIMI_BASE_URL = "https://integrate.api.nvidia.com/v1"
 # ──────────────────────────────────────────────
 # Model Configuration
 # ──────────────────────────────────────────────
-KIMI_TEXT_MODEL = "meta/llama-3.2-90b-vision-instruct"
-KIMI_VISION_MODEL = "meta/llama-3.2-90b-vision-instruct"
+KIMI_TEXT_MODEL = "meta/llama-3.2-3b-instruct"
+KIMI_VISION_MODEL = "meta/llama-3.2-11b-vision-instruct"
 
 # ──────────────────────────────────────────────
 # Memory Configuration (reduced for lower RAM)
