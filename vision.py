@@ -178,8 +178,8 @@ class VisionModule:
 
     def check_camera(self) -> bool:
         """Check whether ANY camera source is available (ESP32 or local)."""
-        if self._use_esp32:
-            return self.check_esp32(self.esp32_url)
+        if self._use_esp32 and self.check_esp32(self.esp32_url):
+            return True
         return self.check_webcam()
 
     # ── Unified Capture ──────────────────────────────────
@@ -187,12 +187,18 @@ class VisionModule:
     def _capture_pil(self, frame=None) -> Image.Image:
         """
         Capture an image as a PIL Image from the best available source.
-        Priority: provided frame → ESP32-CAM → local webcam.
+        Priority: provided frame → ESP32-CAM → local webcam (auto-fallback).
         """
         if frame is not None:
             return self.frame_to_pil(frame)
+
+        # Try ESP32-CAM first, fall back to local webcam
         if self._use_esp32:
-            return self.capture_esp32()
+            try:
+                return self.capture_esp32()
+            except RuntimeError as e:
+                print(f"[VisionModule] ESP32-CAM unavailable ({e}), falling back to local webcam...")
+
         frame = self.capture_frame()
         return self.frame_to_pil(frame)
 

@@ -273,15 +273,12 @@ def main():
     print(f"  {'✅' if mic_ok else '❌'} Microphone")
 
     vision = None
-    cam_ok = VisionModule.check_webcam()
-    if cam_ok:
-        try:
-            vision = VisionModule()
-            print("  ✅ Vision + Camera")
-        except Exception as e:
-            print(f"  ⚠️  Vision init failed: {e}")
-    else:
-        print("  ⚠️  No webcam detected — scene description disabled")
+    try:
+        vision = VisionModule()
+        cam_ok = vision.check_camera()
+        print(f"  {'✅' if cam_ok else '⚠️ '} Vision {'+ Camera' if cam_ok else '(camera not detected yet, will retry on use)'}")
+    except Exception as e:
+        print(f"  ⚠️  Vision init failed: {e}")
 
     assistant = AssistantEngine(memory=memory, vision=vision)
     print("  ✅ Assistant Engine")
