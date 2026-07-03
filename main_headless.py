@@ -26,11 +26,8 @@ if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-# ─── Use Pi-optimized config if available ────────────────
-try:
-    import config_pi as config
-except ImportError:
-    import config
+# ─── Config Configuration ────────────────
+import config
 
 from memory import MemoryManager
 from speech import SpeechManager

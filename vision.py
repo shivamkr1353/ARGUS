@@ -31,18 +31,11 @@ try:
 except ImportError:
     REQUESTS_AVAILABLE = False
 
-# ── Config — supports both standard and Pi config ────
-try:
-    from config_pi import (
-        KIMI_API_KEY, KIMI_VISION_MODEL, KIMI_BASE_URL, SCENE_PROMPT,
-        IMAGE_MAX_SIZE,
-    )
-    # ESP32-CAM settings (only in Pi config)
-    from config_pi import ESP32_CAM_URL
-except ImportError:
-    from config import KIMI_API_KEY, KIMI_VISION_MODEL, KIMI_BASE_URL, SCENE_PROMPT
-    IMAGE_MAX_SIZE = (768, 768)
-    ESP32_CAM_URL = ""
+# Import config
+from config import (
+    KIMI_API_KEY, KIMI_VISION_MODEL, KIMI_BASE_URL, SCENE_PROMPT,
+    IMAGE_MAX_SIZE, ESP32_CAM_URL,
+)
 
 
 def _get_camera_backend():

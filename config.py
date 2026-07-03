@@ -1,6 +1,9 @@
 """
-ARGUS Configuration Module
-Centralized configuration for all system parameters.
+ARGUS — Raspberry Pi Optimized Configuration
+Overrides default config values for lightweight headless operation.
+
+Usage:
+    import config_pi as config   (in main_headless.py)
 """
 
 import os
@@ -21,22 +24,33 @@ KIMI_TEXT_MODEL = "meta/llama-3.2-90b-vision-instruct"
 KIMI_VISION_MODEL = "meta/llama-3.2-90b-vision-instruct"
 
 # ──────────────────────────────────────────────
-# Memory Configuration
+# Memory Configuration (reduced for lower RAM)
 # ──────────────────────────────────────────────
-MAX_CONVERSATION_HISTORY = 5
+MAX_CONVERSATION_HISTORY = 3
 NOTES_FILE = "argus_notes.json"
 
 # ──────────────────────────────────────────────
-# Speech Configuration
+# Speech Configuration (tighter timeouts for Pi)
 # ──────────────────────────────────────────────
 TTS_VOICE = "en-US-AriaNeural"
-TTS_RATE = "+0%"
-LISTEN_TIMEOUT = 7
-PHRASE_TIME_LIMIT = 15
+TTS_RATE = "+10%"
+LISTEN_TIMEOUT = 5
+PHRASE_TIME_LIMIT = 10
 
 # ──────────────────────────────────────────────
-# Vision Configuration
+# ESP32-CAM Configuration
 # ──────────────────────────────────────────────
+# Set the IP address of your ESP32-CAM on the local network.
+# The ESP32-CAM must be running the CameraWebServer sketch.
+# Find its IP from the Serial Monitor after flashing.
+# Example: "http://192.168.1.100"
+ESP32_CAM_URL = os.getenv("ESP32_CAM_URL", "http://192.168.1.100")
+
+# ──────────────────────────────────────────────
+# Vision Configuration (smaller images for Pi)
+# ──────────────────────────────────────────────
+IMAGE_MAX_SIZE = (640, 480)
+
 SCENE_PROMPT = (
     "You are an AI assistant embedded in smart glasses for a visually impaired person. "
     "Describe this environment for the user. Mention:\n"
@@ -62,7 +76,13 @@ ASSISTANT_SYSTEM_PROMPT = (
 )
 
 # ──────────────────────────────────────────────
-# UI Configuration
+# GPIO Configuration (Raspberry Pi)
+# ──────────────────────────────────────────────
+GPIO_BUTTON_PIN = 17          # BCM pin number for trigger button
+GPIO_BUTTON_BOUNCE_MS = 300   # Debounce time in milliseconds
+
+# ──────────────────────────────────────────────
+# UI Configuration (kept for compatibility)
 # ──────────────────────────────────────────────
 APP_TITLE = "ARGUS"
 APP_SUBTITLE = "AI-Powered Responsive Glasses for Uplifting the Blind in Society"
